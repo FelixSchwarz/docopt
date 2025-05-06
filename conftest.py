@@ -1,3 +1,5 @@
+
+from pathlib import Path
 import re
 try:
     import json
@@ -9,9 +11,11 @@ import pytest
 import docopt
 
 
-def pytest_collect_file(path, parent):
-    if path.ext == ".docopt" and path.basename.startswith("test"):
-        return DocoptTestFile(path, parent)
+def pytest_collect_file(file_path: Path, parent):
+    path = file_path
+    if path.suffix == ".docopt" and path.name.startswith("test"):
+        return DocoptTestFile.from_parent(parent=parent, path=path)
+        #return DocoptTestFile(path, parent)
 
 
 def parse_test(raw):
@@ -41,7 +45,7 @@ class DocoptTestFile(pytest.File):
         for name, doc, cases in parse_test(raw):
             name = self.fspath.purebasename
             for case in cases:
-                yield DocoptTestItem("%s(%d)" % (name, index), self, doc, case)
+                yield DocoptTestItem.from_parent(name="%s(%d)" % (name, index), parent=self, doc=doc, case=case)
                 index += 1
 
 
@@ -51,6 +55,10 @@ class DocoptTestItem(pytest.Item):
         super(DocoptTestItem, self).__init__(name, parent)
         self.doc = doc
         self.prog, self.argv, self.expect = case
+
+    @classmethod
+    def from_parent(cls, parent, *, name, doc, case):
+        return super().from_parent(parent=parent, name=name, doc=doc, case=case)
 
     def runtest(self):
         try:
