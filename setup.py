@@ -30,11 +30,10 @@ setup(
     url='http://docopt.org',
     py_modules=['docopt'],
     long_description=open('README.rst').read(),
+    python_requires='>=3.4',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Topic :: Utilities',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
